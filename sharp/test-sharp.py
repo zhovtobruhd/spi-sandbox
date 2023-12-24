@@ -13,9 +13,14 @@ height = 168
 #     display.show()
 #     time.sleep(0.1)
 
-for i in range(5):
-    for j in range(5):
-        display.set_pixel(i, j, 1)
-display.show()
+b = [0] * (width * height // 8)
+
+for i in range(5, 7):
+    for j in range(height):
+        b[j * (width // 8) + i // 8] |= (1 << (i % 8))
+        #display.set_pixel(i, j, 1)
+#display.show()
+
+display.dummy(b)
 
 del display
