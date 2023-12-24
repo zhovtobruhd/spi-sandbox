@@ -21,7 +21,21 @@ def test_rectangle(d):
         d.show()
 
 
-def test_lines(d):
+def test_triangle(d):
+    image = Image.new("1", (w, h))
+    draw = ImageDraw.Draw(image)
+
+    for i in range(min(w, h) // (BORDER * 2)):
+        draw.polygon(
+            [(w // 2, BORDER * i), (BORDER * i, h - BORDER * i - 1), (w - BORDER * i - 1, h - BORDER * i - 1)], 
+            outline=WHITE if (i % 2 == 0) else BLACK, 
+            fill=WHITE if (i % 2 == 0) else BLACK
+        )
+        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.show()
+    
+
+def test_line(d):
     image = Image.new("1", (w, h))
 
     draw = ImageDraw.Draw(image)
@@ -114,7 +128,7 @@ def test_lines(d):
 
     for i in range(h // (BORDER * 2)):
         draw.line(
-            (0, h - 1, w - BORDER * 2 * i - 1, 0), 
+            (0, h - 1, w - 1, h - BORDER * 2 * i - 1), 
             width=1, 
             fill=BLACK
         )
@@ -123,7 +137,7 @@ def test_lines(d):
 
     for i in range(w // (BORDER * 2)):
         draw.line(
-            (0, h - 1, 0, BORDER * 2 * i), 
+            (0, h - 1, w - BORDER * 2 * i - 1, 0), 
             width=1, 
             fill=BLACK
         )
@@ -149,7 +163,8 @@ display.show()
 
 try:
     test_rectangle(display)
-    test_lines(display)
+    test_line(display)
+    test_triangle(display)
 except KeyboardInterrupt:
     pass
 except Exception as e:
