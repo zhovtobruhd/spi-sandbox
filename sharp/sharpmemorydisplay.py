@@ -72,9 +72,9 @@ class SharpMemoryDisplay:
 
         image_buffer = bytearray()
         # toggle the VCOM bit
-        self._buf[0] = _SHARPMEM_BIT_WRITECMD
+        self._buf[0] = self._SHARPMEM_BIT_WRITECMD
         if self._vcom:
-            self._buf[0] |= _SHARPMEM_BIT_VCOM
+            self._buf[0] |= self._SHARPMEM_BIT_VCOM
         self._vcom = not self._vcom
         image_buffer.extend(self._buf)
 
