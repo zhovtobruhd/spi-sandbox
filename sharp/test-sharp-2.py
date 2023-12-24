@@ -47,7 +47,7 @@ def test_triangle(d):
     b = ((x1 - x3)**2 + (y1 - y3)**2)**0.5
     c = ((x1 - x2)**2 + (y1 - y2)**2)**0.5
 
-    for o in range(min(w, h) // (BORDER * 2)):
+    for o in range(min(w, h) // (BORDER * 4)):
         j = o * BORDER
         H = (b**2 - (a/2)**2) ** 0.5
         k = 2 * j * b / a
@@ -189,8 +189,8 @@ display.dummy([0xff] * (w * h // 8))
 display.show()
 
 try:
-    #test_rectangle(display)
-    #test_line(display)
+    test_rectangle(display)
+    test_line(display)
     test_triangle(display)
 except KeyboardInterrupt:
     pass
