@@ -1,5 +1,6 @@
 import time
 import sys
+import math
 from datetime import datetime
 
 import numpy as np
@@ -25,14 +26,36 @@ def test_triangle(d):
     image = Image.new("1", (w, h))
     draw = ImageDraw.Draw(image)
 
-    for i in range(min(w, h) // (BORDER * 2)):
-        draw.polygon(
-            [(w // 2, BORDER * i), (BORDER * i, h - BORDER * i - 1), (w - BORDER * i - 1, h - BORDER * i - 1)], 
-            outline=WHITE if (i % 2 == 0) else BLACK, 
-            fill=WHITE if (i % 2 == 0) else BLACK
-        )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
-        d.show()
+    x1, y1 = w // 2, 0
+    x2, y2 = 0, h - 1 
+    x3, y3 = w - 1, 0
+
+    draw.polygon(
+        [(x1, y1), (x2, y2), (x3, y3)], 
+        outline=BLACK, 
+        fill=BLACK
+    )
+
+    # Lengths of sides of the triangle
+    a = ((x2 - x3)**2 + (y2 - y3)**2)**0.5
+    b = ((x1 - x3)**2 + (y1 - y3)**2)**0.5
+    c = ((x1 - x2)**2 + (y1 - y2)**2)**0.5
+
+    j = BORDER
+
+    h = (b**2 - (a/2)**2) ** 0.5
+    k = 2 * j * b / a
+    i = (h - k - j) * a / (2 * h)
+
+    #for i in range(min(w, h) // (BORDER * 2)):
+    i0 = 1
+    draw.polygon(
+        [(x1, y1 + k), (x1 - i, y2 - j), (x1 + i, y3 - j)], 
+        outline=WHITE if (i0 % 2 == 0) else BLACK, 
+        fill=WHITE if (i0 % 2 == 0) else BLACK
+    )
+    d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+    d.show()
     
 
 def test_line(d):
