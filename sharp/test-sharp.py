@@ -13,10 +13,9 @@ height = 168
 #     display.show()
 #     time.sleep(0.1)
 
-display.set_pixel(0, 0, 1)
-display.set_pixel(143, 0, 1)
-display.set_pixel(0, 167, 1)
-display.set_pixel(143, 167, 1)
+for i in range(5):
+    for j in range(5):
+        display.set_pixel(i, j, 1)
 display.show()
 
 del display
