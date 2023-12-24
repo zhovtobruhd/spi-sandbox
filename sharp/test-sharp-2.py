@@ -20,6 +20,29 @@ def test_rectangle(d):
         d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
         d.show()
 
+
+def test_lines(d):
+    image = Image.new("1", (w, h))
+    draw = ImageDraw.Draw(image)
+
+    for i in range(h // BORDER):
+        draw.line(
+            (0, 0, w - 1, h - BORDER * i - 1), 
+            width=1, 
+            fill=BLACK
+        )
+        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.show()
+        
+    for i in range(w // BORDER):
+        draw.line(
+            (0, 0, w - BORDER * i - 1, h - 1), 
+            width=1, 
+            fill=BLACK
+        )
+        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.show()
+
 # Colors
 BLACK = 0
 WHITE = 255
@@ -38,6 +61,7 @@ display.show()
 
 try:
     test_rectangle(display)
+    test_lines(display)
 except KeyboardInterrupt:
     pass
 except Exception as e:
