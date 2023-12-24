@@ -46,7 +46,7 @@ class SharpMemoryDisplay:
         # prealloc for when we write the display
         self._buf = bytearray(1)
 
-        self.buffer = bytearray((width // 8) * height)
+        self.buffer = bytearray([0xff] * (width // 8) * height)
 
         # Set the vcom bit to a defined state
         self._vcom = True
