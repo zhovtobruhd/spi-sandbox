@@ -23,25 +23,113 @@ def test_rectangle(d):
 
 def test_lines(d):
     image = Image.new("1", (w, h))
+
     draw = ImageDraw.Draw(image)
 
-    for i in range(h // BORDER):
+    # Upper left corner
+
+    draw.rectangle(
+            (0, 0, w - 1, h - 1), 
+            outline=WHITE,
+            fill=WHITE
+        )
+
+    for i in range(h // (BORDER * 2)):
         draw.line(
-            (0, 0, w - 1, h - BORDER * i - 1), 
+            (0, 0, w - 1, BORDER * 2 * i), 
             width=1, 
             fill=BLACK
         )
         d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
         d.show()
-        
-    for i in range(w // BORDER):
+
+    for i in range(w // (BORDER * 2)):
         draw.line(
-            (0, 0, w - BORDER * i - 1, h - 1), 
+            (0, 0, w - BORDER * 2 * i - 1, h - 1), 
             width=1, 
             fill=BLACK
         )
         d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
         d.show()
+
+    # Upper right corner
+
+    draw.rectangle(
+            (0, 0, w - 1, h - 1), 
+            outline=WHITE,
+            fill=WHITE
+        )
+
+    for i in range(h // (BORDER * 2)):
+        draw.line(
+            (w - 1, 0, 0, BORDER * 2 * i), 
+            width=1, 
+            fill=BLACK
+        )
+        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.show()
+
+    for i in range(w // (BORDER * 2)):
+        draw.line(
+            (w - 1, 0, BORDER * 2 * i, h - 1), 
+            width=1, 
+            fill=BLACK
+        )
+        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.show()
+
+    # Lower right corner
+
+    draw.rectangle(
+            (0, 0, w - 1, h - 1), 
+            outline=WHITE,
+            fill=WHITE
+        )
+
+    for i in range(h // (BORDER * 2)):
+        draw.line(
+            (w - 1, h - 1, 0, h - BORDER * 2 * i - 1), 
+            width=1, 
+            fill=BLACK
+        )
+        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.show()
+
+    for i in range(w // (BORDER * 2)):
+        draw.line(
+            (w - 1, h - 1, BORDER * 2 * i, 0), 
+            width=1, 
+            fill=BLACK
+        )
+        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.show()
+    
+    # Lower left corner
+
+    draw.rectangle(
+            (0, 0, w - 1, h - 1), 
+            outline=WHITE,
+            fill=WHITE
+        )
+
+    for i in range(h // (BORDER * 2)):
+        draw.line(
+            (0, h - 1, w - BORDER * 2 * i - 1, 0), 
+            width=1, 
+            fill=BLACK
+        )
+        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.show()
+
+    for i in range(w // (BORDER * 2)):
+        draw.line(
+            (0, h - 1, 0, BORDER * 2 * i), 
+            width=1, 
+            fill=BLACK
+        )
+        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.show()
+
 
 # Colors
 BLACK = 0
