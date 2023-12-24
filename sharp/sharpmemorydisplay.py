@@ -9,13 +9,9 @@ from time import sleep
 import spidev
 
 
-_SHARPMEM_BIT_WRITECMD = 0x01 # 0x80 in lsb
-_SHARPMEM_BIT_VCOM =     0x02 # 0x40 in lsb
-_SHARPMEM_BIT_CLEAR =    0x04 # 0x20 in lsb
-
-
 def sleep_ms(msecs):
     sleep(float(msecs) / 1000.0)
+
 
 def reverse_bit(num: int) -> int:
     """Turn an LSB byte to an MSB byte, and vice versa"""
@@ -29,6 +25,10 @@ def reverse_bit(num: int) -> int:
 
 class SharpMemoryDisplay:
     """Driver class"""
+
+    _SHARPMEM_BIT_WRITECMD = 0x01 # 0x80 in lsb
+    _SHARPMEM_BIT_VCOM =     0x02 # 0x40 in lsb
+    _SHARPMEM_BIT_CLEAR =    0x04 # 0x20 in lsb
 
     def __init__(self, bus, cs, width=144, height=168, mode=0, max_speed_hz=1000000):
         self.width = width
@@ -51,7 +51,6 @@ class SharpMemoryDisplay:
         # Set the vcom bit to a defined state
         self._vcom = True
 
-
     def __del__(self):
         try:
             self.spi.close()
@@ -60,14 +59,13 @@ class SharpMemoryDisplay:
 
     def dummy(self, b):
         for i, v in enumerate(self.buffer):
-            #self.buffer[i] = reverse_bit(b[i])
             self.buffer[i] = b[i]
     
     def set_pixel(self, x, y, v) -> None:
         if v == 0:
-            self.buffer[y * (self.width // 8)] &= ~(1 << x)
+            self.buffer[y * (self.width // 8) + x // 8] &= ~(1 << (x % 8))
         else:
-            self.buffer[y * (self.width // 8)] |= (1 << x)
+            self.buffer[y * (self.width // 8) + x // 8] |= (1 << (x % 8))
 
     def show(self) -> None:
         """write out the frame buffer"""
