@@ -25,10 +25,16 @@ def test_rectangle(d):
 def test_triangle(d):
     image = Image.new("1", (w, h))
     draw = ImageDraw.Draw(image)
+    
+    draw.rectangle(
+	    (0, 0, w - 1, h - 1), 
+        outline=WHITE, 
+        fill=WHITE
+    )
 
     x1, y1 = w // 2, 0
     x2, y2 = 0, h - 1 
-    x3, y3 = w - 1, 0
+    x3, y3 = w - 1, h - 1
 
     draw.polygon(
         [(x1, y1), (x2, y2), (x3, y3)], 
@@ -41,21 +47,19 @@ def test_triangle(d):
     b = ((x1 - x3)**2 + (y1 - y3)**2)**0.5
     c = ((x1 - x2)**2 + (y1 - y2)**2)**0.5
 
-    j = BORDER
-
-    h = (b**2 - (a/2)**2) ** 0.5
-    k = 2 * j * b / a
-    i = (h - k - j) * a / (2 * h)
-
-    #for i in range(min(w, h) // (BORDER * 2)):
-    i0 = 1
-    draw.polygon(
-        [(x1, y1 + k), (x1 - i, y2 - j), (x1 + i, y3 - j)], 
-        outline=WHITE if (i0 % 2 == 0) else BLACK, 
-        fill=WHITE if (i0 % 2 == 0) else BLACK
-    )
-    d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
-    d.show()
+    for o in range(min(w, h) // (BORDER * 2)):
+        j = o * BORDER
+        H = (b**2 - (a/2)**2) ** 0.5
+        k = 2 * j * b / a
+        i = (H - k - j) * a / (2 * H)
+    
+        draw.polygon(
+            [(x1, y1 + k), (x1 - i, y2 - j), (x1 + i, y3 - j)], 
+            outline=WHITE if (o % 2 == 0) else BLACK, 
+            fill=WHITE if (o % 2 == 0) else BLACK
+        )
+        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.show()
     
 
 def test_line(d):
@@ -185,8 +189,8 @@ display.dummy([0xff] * (w * h // 8))
 display.show()
 
 try:
-    test_rectangle(display)
-    test_line(display)
+    #test_rectangle(display)
+    #test_line(display)
     test_triangle(display)
 except KeyboardInterrupt:
     pass
