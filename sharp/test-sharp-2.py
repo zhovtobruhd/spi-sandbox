@@ -30,11 +30,11 @@ def create_image(width, height):
     return image, draw
 
 
-def empty_rectangle(display: SharpMemoryDisplay, color):
-    w = display.width
-    h = display.height
+def empty_rectangle(draw: ImageDraw, color):
+    w = 144
+    h = 168
 
-    display.rectangle(
+    draw.rectangle(
         (0, 0, w - 1, h - 1),
         outline=color,
         fill=color
@@ -209,16 +209,19 @@ def test_text(display: SharpMemoryDisplay) -> None:
 
     empty_rectangle(draw, WHITE)
 
-    font_sizes = (8, 10, 12, 14, 16, 20, 24)
+    font_sizes = (9, 10, 11, 12, 14, 16, 18, 20, 22, 24)
 
-    text = "Hello, World"
+    text = "abcdefghi"
 
     y = 0
 
     for font_size in font_sizes:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
-        (font_width, font_height) = font.getsize(text)
-        (c_w, _) = (w // 2, y)
+        font = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 
+            font_size
+        )
+        (font_width, _) = font.getsize(text)
+        (c_w, _) = (w // 2 - 1, y)
         draw.text(
             (c_w - font_width // 2, y),
             text,
@@ -228,6 +231,7 @@ def test_text(display: SharpMemoryDisplay) -> None:
         y += font_size
         display.dummy(listify(image))
         display.show()
+    time.sleep(1)
 
 
 def main():
