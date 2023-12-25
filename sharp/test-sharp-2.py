@@ -2,6 +2,7 @@
 Script to test SHARP Memory Display
 Author: Dmytro Zhovtobriukh
 """
+import time
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
