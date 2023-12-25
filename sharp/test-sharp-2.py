@@ -1,10 +1,24 @@
+"""
+Script to test SHARP Memory Display
+Author: Dmytro Zhovtobriukh
+"""
+
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from sharpmemorydisplay import SharpMemoryDisplay
 
 
-def listify(img):
+# Colors
+BLACK = 0
+WHITE = 255
+
+# Parameters to Change
+BORDER = 4
+FONTSIZE = 24
+
+
+def listify(img: Image):
     return np.packbits(
         np.asarray(img.rotate(180, expand=1)), axis=1
     ).flatten().tolist()
@@ -16,191 +30,230 @@ def create_image(width, height):
     return image, draw
 
 
-def empty_rectangle(d, width, height, color):
-    d.rectangle(
-        (0, 0, width - 1, height - 1),
+def empty_rectangle(display: SharpMemoryDisplay, color):
+    w = display.width
+    h = display.height
+
+    display.rectangle(
+        (0, 0, w - 1, h - 1),
         outline=color,
         fill=color
     )
 
 
-def test_rectangle(d):
+def test_rectangle(display: SharpMemoryDisplay) -> None:
+    w = display.width
+    h = display.height
+
     image, draw = create_image(w, h)
 
     for i in range(min(w, h) // (BORDER * 2)):
         draw.rectangle(
             (
-                0 + BORDER * i, 
-                0 + BORDER * i, 
-                w - BORDER * i - 1, 
+                0 + BORDER * i,
+                0 + BORDER * i,
+                w - BORDER * i - 1,
                 h - BORDER * i - 1
-            ), 
-            outline=WHITE if (i % 2 == 0) else BLACK, 
+            ),
+            outline=WHITE if (i % 2 == 0) else BLACK,
             fill=WHITE if (i % 2 == 0) else BLACK
         )
-        d.dummy(listify(image))
-        d.show()
+        display.dummy(listify(image))
+        display.show()
 
 
-def test_triangle(d):
+def test_triangle(display: SharpMemoryDisplay) -> None:
+    w = display.width
+    h = display.height
+
     image, draw = create_image(w, h)
 
-    empty_rectangle(draw, w, h, WHITE)
+    empty_rectangle(draw, WHITE)
 
     x1, y1 = w // 2, 0
-    x2, y2 = 0, h - 1 
+    x2, y2 = 0, h - 1
     x3, y3 = w - 1, h - 1
 
     draw.polygon(
-        [(x1, y1), (x2, y2), (x3, y3)], 
-        outline=BLACK, 
+        [(x1, y1), (x2, y2), (x3, y3)],
+        outline=BLACK,
         fill=BLACK
     )
 
     # Lengths of sides of the triangle
-    a = ((x2 - x3)**2 + (y2 - y3)**2)**0.5
-    b = ((x1 - x3)**2 + (y1 - y3)**2)**0.5
-    c = ((x1 - x2)**2 + (y1 - y2)**2)**0.5
+    a = ((x2 - x3) ** 2 + (y2 - y3) ** 2) ** 0.5
+    b = ((x1 - x3) ** 2 + (y1 - y3) ** 2) ** 0.5
+    c = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
     j = BORDER
 
-    H = (b**2 - (a/2)**2) ** 0.5
+    H = (b ** 2 - (a / 2) ** 2) ** 0.5
     k = 2 * j * b / a
     i = a / 2 - (H - k - j) * a / (2 * H)
 
-    for o in range(min(w // int(i*2), h // int(j+k))):
+    for o in range(min(w // int(i * 2), h // int(j + k))):
 
         draw.polygon(
             [
-                (x1, y1 + k*o), 
-                (x2 + i*o, y2 - j*o), 
-                (x3 - i*o, y3 - j*o)
-            ], 
-            outline=WHITE if (o % 2 == 1) else BLACK, 
+                (x1, y1 + k * o),
+                (x2 + i * o, y2 - j * o),
+                (x3 - i * o, y3 - j * o)
+            ],
+            outline=WHITE if (o % 2 == 1) else BLACK,
             fill=WHITE if (o % 2 == 1) else BLACK
         )
-        d.dummy(listify(image))
-        d.show()
-    
+        display.dummy(listify(image))
+        display.show()
 
-def test_line(d):
+
+def test_line(display: SharpMemoryDisplay) -> None:
+    w = display.width
+    h = display.height
+
     image, draw = create_image(w, h)
 
     # Upper left corner
 
-    empty_rectangle(draw, w, h, WHITE)
+    empty_rectangle(draw, WHITE)
 
     for i in range(h // (BORDER * 2)):
         draw.line(
-            (0, 0, w - 1, BORDER * 2 * i), 
-            width=1, 
+            (0, 0, w - 1, BORDER * 2 * i),
+            width=1,
             fill=BLACK
         )
-        d.dummy(listify(image))
-        d.show()
+        display.dummy(listify(image))
+        display.show()
 
     for i in range(w // (BORDER * 2)):
         draw.line(
-            (0, 0, w - BORDER * 2 * i - 1, h - 1), 
-            width=1, 
+            (0, 0, w - BORDER * 2 * i - 1, h - 1),
+            width=1,
             fill=BLACK
         )
-        d.dummy(listify(image))
-        d.show()
+        display.dummy(listify(image))
+        display.show()
 
     # Upper right corner
 
-    empty_rectangle(draw, w, h, WHITE)
+    empty_rectangle(draw, WHITE)
 
     for i in range(h // (BORDER * 2)):
         draw.line(
-            (w - 1, 0, 0, BORDER * 2 * i), 
-            width=1, 
+            (w - 1, 0, 0, BORDER * 2 * i),
+            width=1,
             fill=BLACK
         )
-        d.dummy(listify(image))
-        d.show()
+        display.dummy(listify(image))
+        display.show()
 
     for i in range(w // (BORDER * 2)):
         draw.line(
-            (w - 1, 0, BORDER * 2 * i, h - 1), 
-            width=1, 
+            (w - 1, 0, BORDER * 2 * i, h - 1),
+            width=1,
             fill=BLACK
         )
-        d.dummy(listify(image))
-        d.show()
+        display.dummy(listify(image))
+        display.show()
 
     # Lower right corner
 
-    empty_rectangle(draw, w, h, WHITE)
+    empty_rectangle(draw, WHITE)
 
     for i in range(h // (BORDER * 2)):
         draw.line(
-            (w - 1, h - 1, 0, h - BORDER * 2 * i - 1), 
-            width=1, 
+            (w - 1, h - 1, 0, h - BORDER * 2 * i - 1),
+            width=1,
             fill=BLACK
         )
-        d.dummy(listify(image))
-        d.show()
+        display.dummy(listify(image))
+        display.show()
 
     for i in range(w // (BORDER * 2)):
         draw.line(
-            (w - 1, h - 1, BORDER * 2 * i, 0), 
-            width=1, 
+            (w - 1, h - 1, BORDER * 2 * i, 0),
+            width=1,
             fill=BLACK
         )
-        d.dummy(listify(image))
-        d.show()
-    
+        display.dummy(listify(image))
+        display.show()
+
     # Lower left corner
 
-    empty_rectangle(draw, w, h, WHITE)
+    empty_rectangle(draw, WHITE)
 
     for i in range(h // (BORDER * 2)):
         draw.line(
-            (0, h - 1, w - 1, h - BORDER * 2 * i - 1), 
-            width=1, 
+            (0, h - 1, w - 1, h - BORDER * 2 * i - 1),
+            width=1,
             fill=BLACK
         )
-        d.dummy(listify(image))
-        d.show()
+        display.dummy(listify(image))
+        display.show()
 
     for i in range(w // (BORDER * 2)):
         draw.line(
-            (0, h - 1, w - BORDER * 2 * i - 1, 0), 
-            width=1, 
+            (0, h - 1, w - BORDER * 2 * i - 1, 0),
+            width=1,
             fill=BLACK
         )
-        d.dummy(listify(image))
-        d.show()
+        display.dummy(listify(image))
+        display.show()
 
 
-# Colors
-BLACK = 0
-WHITE = 255
+def test_text(display: SharpMemoryDisplay) -> None:
+    w = display.width
+    h = display.height
 
-# Parameters to Change
-BORDER = 4
-FONTSIZE = 24
+    image, draw = create_image(w, h)
 
-display = SharpMemoryDisplay(1, 0)
+    empty_rectangle(draw, WHITE)
 
-w = display.width
-h = display.height
+    font_sizes = (8, 10, 12, 14, 16, 20, 24)
 
-display.dummy([0xff] * (w * h // 8))
-display.show()
+    text = "Hello, World"
 
-try:
-    test_rectangle(display)
-    test_line(display)
-    test_triangle(display)
-except KeyboardInterrupt:
-    pass
-except Exception as e:
-    print(e)
-    with open('log.txt', 'w', encoding='utf-8') as f:
-        f.write(str(e))
-finally:
-    del display
+    y = 0
 
+    for font_size in font_sizes:
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
+        (font_width, font_height) = font.getsize(text)
+        (c_w, _) = (w // 2, y)
+        draw.text(
+            (c_w - font_width // 2, y),
+            text,
+            font=font,
+            fill=BLACK,
+        )
+        y += font_size
+        display.dummy(listify(image))
+        display.show()
+
+
+def main():
+    display = SharpMemoryDisplay(1, 0)
+
+    w = display.width
+    h = display.height
+
+    # Initialize display with the white color
+    display.dummy([WHITE] * (w * h // 8))
+    display.show()
+
+    try:
+        test_text(display)
+        test_rectangle(display)
+        test_line(display)
+        test_triangle(display)
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        print(e)
+        with open('log.txt', 'w', encoding='utf-8') as f:
+            f.write(str(e))
+    finally:
+        del display
+
+
+if __name__ == "__main__":
+    main()
