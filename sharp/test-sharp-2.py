@@ -1,36 +1,51 @@
-import time
-import sys
-import math
-from datetime import datetime
-
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from sharpmemorydisplay import SharpMemoryDisplay
 
-def test_rectangle(d):
-    image = Image.new("1", (w, h))
+
+def listify(img):
+    return np.packbits(
+        np.asarray(img.rotate(180, expand=1)), axis=1
+    ).flatten().tolist()
+
+
+def create_image(width, height):
+    image = Image.new("1", (width, height))
     draw = ImageDraw.Draw(image)
+    return image, draw
+
+
+def empty_rectangle(d, width, height, color):
+    d.rectangle(
+        (0, 0, width - 1, height - 1),
+        outline=color,
+        fill=color
+    )
+
+
+def test_rectangle(d):
+    image, draw = create_image(w, h)
 
     for i in range(min(w, h) // (BORDER * 2)):
         draw.rectangle(
-            (0 + BORDER * i, 0 + BORDER * i, w - BORDER * i - 1, h - BORDER * i - 1), 
+            (
+                0 + BORDER * i, 
+                0 + BORDER * i, 
+                w - BORDER * i - 1, 
+                h - BORDER * i - 1
+            ), 
             outline=WHITE if (i % 2 == 0) else BLACK, 
             fill=WHITE if (i % 2 == 0) else BLACK
         )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.dummy(listify(image))
         d.show()
 
 
 def test_triangle(d):
-    image = Image.new("1", (w, h))
-    draw = ImageDraw.Draw(image)
-    
-    draw.rectangle(
-	    (0, 0, w - 1, h - 1), 
-        outline=WHITE, 
-        fill=WHITE
-    )
+    image, draw = create_image(w, h)
+
+    empty_rectangle(draw, w, h, WHITE)
 
     x1, y1 = w // 2, 0
     x2, y2 = 0, h - 1 
@@ -47,33 +62,33 @@ def test_triangle(d):
     b = ((x1 - x3)**2 + (y1 - y3)**2)**0.5
     c = ((x1 - x2)**2 + (y1 - y2)**2)**0.5
 
-    for o in range(min(w, h) // (BORDER * 4)):
-        j = o * BORDER
-        H = (b**2 - (a/2)**2) ** 0.5
-        k = 2 * j * b / a
-        i = (H - k - j) * a / (2 * H)
-    
+    j = BORDER
+
+    H = (b**2 - (a/2)**2) ** 0.5
+    k = 2 * j * b / a
+    i = a / 2 - (H - k - j) * a / (2 * H)
+
+    for o in range(min(w // int(i*2), h // int(j+k))):
+
         draw.polygon(
-            [(x1, y1 + k), (x1 - i, y2 - j), (x1 + i, y3 - j)], 
-            outline=WHITE if (o % 2 == 0) else BLACK, 
-            fill=WHITE if (o % 2 == 0) else BLACK
+            [
+                (x1, y1 + k*o), 
+                (x2 + i*o, y2 - j*o), 
+                (x3 - i*o, y3 - j*o)
+            ], 
+            outline=WHITE if (o % 2 == 1) else BLACK, 
+            fill=WHITE if (o % 2 == 1) else BLACK
         )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.dummy(listify(image))
         d.show()
     
 
 def test_line(d):
-    image = Image.new("1", (w, h))
-
-    draw = ImageDraw.Draw(image)
+    image, draw = create_image(w, h)
 
     # Upper left corner
 
-    draw.rectangle(
-            (0, 0, w - 1, h - 1), 
-            outline=WHITE,
-            fill=WHITE
-        )
+    empty_rectangle(draw, w, h, WHITE)
 
     for i in range(h // (BORDER * 2)):
         draw.line(
@@ -81,7 +96,7 @@ def test_line(d):
             width=1, 
             fill=BLACK
         )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.dummy(listify(image))
         d.show()
 
     for i in range(w // (BORDER * 2)):
@@ -90,16 +105,12 @@ def test_line(d):
             width=1, 
             fill=BLACK
         )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.dummy(listify(image))
         d.show()
 
     # Upper right corner
 
-    draw.rectangle(
-            (0, 0, w - 1, h - 1), 
-            outline=WHITE,
-            fill=WHITE
-        )
+    empty_rectangle(draw, w, h, WHITE)
 
     for i in range(h // (BORDER * 2)):
         draw.line(
@@ -107,7 +118,7 @@ def test_line(d):
             width=1, 
             fill=BLACK
         )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.dummy(listify(image))
         d.show()
 
     for i in range(w // (BORDER * 2)):
@@ -116,16 +127,12 @@ def test_line(d):
             width=1, 
             fill=BLACK
         )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.dummy(listify(image))
         d.show()
 
     # Lower right corner
 
-    draw.rectangle(
-            (0, 0, w - 1, h - 1), 
-            outline=WHITE,
-            fill=WHITE
-        )
+    empty_rectangle(draw, w, h, WHITE)
 
     for i in range(h // (BORDER * 2)):
         draw.line(
@@ -133,7 +140,7 @@ def test_line(d):
             width=1, 
             fill=BLACK
         )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.dummy(listify(image))
         d.show()
 
     for i in range(w // (BORDER * 2)):
@@ -142,16 +149,12 @@ def test_line(d):
             width=1, 
             fill=BLACK
         )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.dummy(listify(image))
         d.show()
     
     # Lower left corner
 
-    draw.rectangle(
-            (0, 0, w - 1, h - 1), 
-            outline=WHITE,
-            fill=WHITE
-        )
+    empty_rectangle(draw, w, h, WHITE)
 
     for i in range(h // (BORDER * 2)):
         draw.line(
@@ -159,7 +162,7 @@ def test_line(d):
             width=1, 
             fill=BLACK
         )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.dummy(listify(image))
         d.show()
 
     for i in range(w // (BORDER * 2)):
@@ -168,7 +171,7 @@ def test_line(d):
             width=1, 
             fill=BLACK
         )
-        d.dummy(np.packbits(np.asarray(image.rotate(180, expand=1)), axis=1).flatten().tolist())
+        d.dummy(listify(image))
         d.show()
 
 
